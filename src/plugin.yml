@@ -1,0 +1,6 @@
+name: Wings
+version: 1.0
+main: me.abandoncaptian.Wings.Main
+description: Wings made by abandoncaptian
+commands:
+  wings:
