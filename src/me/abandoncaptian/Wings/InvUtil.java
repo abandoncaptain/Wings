@@ -14,6 +14,7 @@ public class InvUtil {
 	}
 	
 	public ArrayList<ItemStack> permParticles(Player p){
+		p.sendMessage("Called permParticles");
 		ArrayList<ItemStack> particles = new ArrayList<ItemStack>();
 		if(p.hasPermission("perkeffects.wings.heart")){
 			ItemStack item = new ItemStack(Material.PAPER, 1);

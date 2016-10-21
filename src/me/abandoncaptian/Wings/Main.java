@@ -49,22 +49,22 @@ public class Main extends JavaPlugin implements Listener{
 	}
 
 	public void configSetup() {
-		if (!this.Config.contains("Wings")) {
-			this.Config.set("Wings", null);
+		if (!Config.contains("Wings")) {
+			Config.set("Wings", null);
 		}
-		this.Config.saveConfig();
-		this.Config.reloadConfig();
+		Config.saveConfig();
+		Config.reloadConfig();
 	}
 
 	public void configWingSetup(Player p) {
-		if (!this.Config.contains("Wings." + p.getName() + ".Enabled")) {
-			this.Config.set("Wings." + p.getName() + ".Enabled", Boolean.valueOf(true));
+		if (!Config.contains("Wings." + p.getName() + ".Enabled")) {
+			Config.set("Wings." + p.getName() + ".Enabled", Boolean.valueOf(true));
 		}
-		if (!this.Config.contains("Wings." + p.getName() + ".Particle")) {
-			this.Config.set("Wings." + p.getName() + ".Particle", "FLAME");
+		if (!Config.contains("Wings." + p.getName() + ".Particle")) {
+			Config.set("Wings." + p.getName() + ".Particle", "FLAME");
 		}
-		this.Config.saveConfig();
-		this.Config.reloadConfig();
+		Config.saveConfig();
+		Config.reloadConfig();
 	}
 
 	public void useInvGUI(Player p)
@@ -74,7 +74,7 @@ public class Main extends JavaPlugin implements Listener{
 		ItemMeta partM = particle.getItemMeta();
 		ItemMeta toggleM = particle.getItemMeta();
 		ItemStack toggle;
-		if (((Boolean)this.Config.get("Wings." + p.getName() + ".Enabled")).booleanValue()) {
+		if (Config.getBoolean("Wings." + p.getName() + ".Enabled")) {
 			toggle = new ItemStack(Material.REDSTONE_TORCH_ON, 1);
 			toggleM.setDisplayName("§aToggled On");
 		} else {
@@ -91,7 +91,8 @@ public class Main extends JavaPlugin implements Listener{
 
 	public void useInvParticlePicker(Player p)
 	{
-		ArrayList<ItemStack> items = iV.permParticles(p);
+		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+		items = iV.permParticles(p);
 		int size;
 		if (items.size() <= 9)
 			size = 9;
@@ -114,41 +115,41 @@ public class Main extends JavaPlugin implements Listener{
 			e.setCancelled(true);
 			ItemStack clicked = e.getCurrentItem();
 			if (clicked.getItemMeta().getDisplayName().contains("Toggled On")) {
-				this.Config.set("Wings." + p.getName() + ".Enabled", Boolean.valueOf(false));
+				Config.set("Wings." + p.getName() + ".Enabled", Boolean.valueOf(false));
 				p.closeInventory();
 				useInvGUI(p);
 			} else if (clicked.getItemMeta().getDisplayName().contains("Toggled Off")) {
-				this.Config.set("Wings." + p.getName() + ".Enabled", Boolean.valueOf(true));
+				Config.set("Wings." + p.getName() + ".Enabled", Boolean.valueOf(true));
 				p.closeInventory();
 				useInvGUI(p);
 			} else if (clicked.getItemMeta().getDisplayName().contains("Set Wing Particle")) {
 				p.closeInventory();
 				useInvParticlePicker(p);
 			}
-			this.Config.saveConfig();
-			this.Config.reloadConfig();
+			Config.saveConfig();
+			Config.reloadConfig();
 			return;
 		}
 
 		if (e.getInventory().getTitle().contains("Particle Wings GUI")) {
 			e.setCancelled(true);
 			ItemStack clicked = e.getCurrentItem();
-			if (clicked.getItemMeta().getDisplayName().equals("§cHeart Particle")) this.Config.set("Wings." + p.getName() + ".particle", "HEART");
-			if (clicked.getItemMeta().getDisplayName().equals("§cFlame Particle")) this.Config.set("Wings." + p.getName() + ".particle", "FLAME");
-			if (clicked.getItemMeta().getDisplayName().equals("§cEnchantment Table Particle")) this.Config.set("Wings." + p.getName() + ".particle", "ENCHANTMENT_TABE");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Particle")) this.Config.set("Wings." + p.getName() + ".particle", "SPELL");
-			if (clicked.getItemMeta().getDisplayName().equals("§cMagic Crit Particle")) this.Config.set("Wings." + p.getName() + ".particle", "CRIT_MAGIC");
-			if (clicked.getItemMeta().getDisplayName().equals("§cCrit Particle")) this.Config.set("Wings." + p.getName() + ".particle", "CRIT");
-			if (clicked.getItemMeta().getDisplayName().equals("§cNote Particle")) this.Config.set("Wings." + p.getName() + ".particle", "NOTE");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Instant Particle")) this.Config.set("Wings." + p.getName() + ".particle", "SPELL_INSTANT");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Mob Particle")) this.Config.set("Wings." + p.getName() + ".particle", "SPELL_MOB");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Witch Particle")) this.Config.set("Wings." + p.getName() + ".particle", "SPELL_WITCH");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Ambient Mob Particle")) this.Config.set("Wings." + p.getName() + ".particle", "SPELL_MOB_AMBIENT");
-			if (clicked.getItemMeta().getDisplayName().equals("§cDepth Particle")) this.Config.set("Wings." + p.getName() + ".particle", "SUSPENDED_DEPTH");
-			if (clicked.getItemMeta().getDisplayName().equals("§cHappy Villager Particle")) this.Config.set("Wings." + p.getName() + ".particle", "VILLAGER_HAPPY");
-			if (clicked.getItemMeta().getDisplayName().equals("§cWater Splash Particle")) this.Config.set("Wings." + p.getName() + ".particle", "WATER_SPLASH");
-			this.Config.saveConfig();
-			this.Config.reloadConfig();
+			if (clicked.getItemMeta().getDisplayName().equals("§cHeart Particle")) Config.set("Wings." + p.getName() + ".particle", "HEART");
+			if (clicked.getItemMeta().getDisplayName().equals("§cFlame Particle")) Config.set("Wings." + p.getName() + ".particle", "FLAME");
+			if (clicked.getItemMeta().getDisplayName().equals("§cEnchantment Table Particle")) Config.set("Wings." + p.getName() + ".particle", "ENCHANTMENT_TABE");
+			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL");
+			if (clicked.getItemMeta().getDisplayName().equals("§cMagic Crit Particle")) Config.set("Wings." + p.getName() + ".particle", "CRIT_MAGIC");
+			if (clicked.getItemMeta().getDisplayName().equals("§cCrit Particle")) Config.set("Wings." + p.getName() + ".particle", "CRIT");
+			if (clicked.getItemMeta().getDisplayName().equals("§cNote Particle")) Config.set("Wings." + p.getName() + ".particle", "NOTE");
+			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Instant Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL_INSTANT");
+			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Mob Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL_MOB");
+			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Witch Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL_WITCH");
+			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Ambient Mob Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL_MOB_AMBIENT");
+			if (clicked.getItemMeta().getDisplayName().equals("§cDepth Particle")) Config.set("Wings." + p.getName() + ".particle", "SUSPENDED_DEPTH");
+			if (clicked.getItemMeta().getDisplayName().equals("§cHappy Villager Particle")) Config.set("Wings." + p.getName() + ".particle", "VILLAGER_HAPPY");
+			if (clicked.getItemMeta().getDisplayName().equals("§cWater Splash Particle")) Config.set("Wings." + p.getName() + ".particle", "WATER_SPLASH");
+			Config.saveConfig();
+			Config.reloadConfig();
 			p.closeInventory();
 			p.sendMessage("§bWing particle is now set to " + clicked.getItemMeta().getDisplayName());
 			return;
@@ -184,7 +185,7 @@ public class Main extends JavaPlugin implements Listener{
 		return new BukkitRunnable(){
 			public void run() {
 				for (Player p : Bukkit.getOnlinePlayers()){
-					if (Config.contains("Wings." + p.getName() + ".Enabled")){
+					if (Config.getBoolean("Wings." + p.getName() + ".Enabled")){
 						if (ParticleEffect.valueOf(Config.getString("Wings." + p.getName() + ".Particle")) != null) {
 							ParticleEffect part = ParticleEffect.valueOf(Config.getString("Wings." + p.getName() + ".Particle"));
 							wingParticles(p, part);
