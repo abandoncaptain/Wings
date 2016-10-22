@@ -2,7 +2,7 @@ package me.abandoncaptian.Wings;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
-
+import me.abandoncaptian.Wings.InvUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -92,7 +92,9 @@ public class Main extends JavaPlugin implements Listener{
 	public void useInvParticlePicker(Player p)
 	{
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
-		items = iV.permParticles(p);
+		for(ItemStack i: iV.permParticles(p)){
+			items.add(i);
+		}
 		int size;
 		if (items.size() <= 9)
 			size = 9;
