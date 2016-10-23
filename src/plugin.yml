@@ -4,3 +4,26 @@ main: me.abandoncaptian.Wings.Main
 description: Wings made by abandoncaptian
 commands:
   wings:
+permissions:
+  wings.*:
+    description: Gives access to all wing particles and commands
+    children:
+      wings.heart: true
+      wings.flame: true
+      wings.enchantment_table: true
+      wings.spell: true
+      wings.crit_magic: true
+      wings.crit: true
+      wings.note: true
+      wings.spell_instant: true
+      wings.water_wake: true
+      wings.spell_mob: true
+      wings.spell_witch: true
+      wings.spell_mob_ambient: true
+      wings.suspended_depth: true
+      wings.villager_happy: true
+      wings.reload: true
+  wings.reload:
+     description: Gives access to wings reload command
+  wings.wings:
+     description: Gives access to all wing particles gui

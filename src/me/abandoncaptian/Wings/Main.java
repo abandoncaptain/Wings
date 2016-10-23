@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,7 +38,8 @@ public class Main extends JavaPlugin implements Listener{
 		manager = new MyConfigManager(this);
 		Config = manager.getNewConfig("PlayerData.yml", new String[] {"Perk Effects Player Data","Don't edit anything in this file!"});
 		configSetup();
-	    Bukkit.getScheduler().runTaskTimer(this, scheduling(), 0L, 1L);
+		iV = new InvUtil(this);
+	    Bukkit.getScheduler().runTaskTimer(this, scheduling(), 0L, 3L);
 	}
 
 	@Override
@@ -92,9 +94,7 @@ public class Main extends JavaPlugin implements Listener{
 	public void useInvParticlePicker(Player p)
 	{
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
-		for(ItemStack i: iV.permParticles(p)){
-			items.add(i);
-		}
+		items = iV.permParticles(p);
 		int size;
 		if (items.size() <= 9)
 			size = 9;
@@ -102,17 +102,27 @@ public class Main extends JavaPlugin implements Listener{
 			size = 18;
 		}
 		Inventory inv = Bukkit.createInventory(null, size, "        §b§lSet Wings Particle");
-		for (int i = 0; i <= items.size(); i++) {
+		for (int i = 0; i < items.size(); i++) {
 			inv.addItem(new ItemStack[] { (ItemStack)items.get(i) });
 		}
 		p.openInventory(inv);
+	}
+	
+	@EventHandler
+	public void onPlayerDisconnect(PlayerQuitEvent e){
+		Player p = e.getPlayer();
+		if(Config.contains("Wings." + p.getName())){
+			Config.set("Wings." + p.getName() + ".Enabled", false);
+			Config.saveConfig();
+			Config.reloadConfig();
+		}
+		return;
 	}
 
 	@EventHandler
 	public void guiInvClick(InventoryClickEvent e)
 	{
 		Player p = (Player)e.getWhoClicked();
-		p.sendMessage(e.getInventory().getTitle());
 		if (e.getInventory().getTitle().contains("Particle Wings GUI")) {
 			e.setCancelled(true);
 			ItemStack clicked = e.getCurrentItem();
@@ -133,23 +143,38 @@ public class Main extends JavaPlugin implements Listener{
 			return;
 		}
 
-		if (e.getInventory().getTitle().contains("Particle Wings GUI")) {
+		if (e.getInventory().getTitle().contains("Set Wings Particle")) {
 			e.setCancelled(true);
 			ItemStack clicked = e.getCurrentItem();
-			if (clicked.getItemMeta().getDisplayName().equals("§cHeart Particle")) Config.set("Wings." + p.getName() + ".particle", "HEART");
-			if (clicked.getItemMeta().getDisplayName().equals("§cFlame Particle")) Config.set("Wings." + p.getName() + ".particle", "FLAME");
-			if (clicked.getItemMeta().getDisplayName().equals("§cEnchantment Table Particle")) Config.set("Wings." + p.getName() + ".particle", "ENCHANTMENT_TABE");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL");
-			if (clicked.getItemMeta().getDisplayName().equals("§cMagic Crit Particle")) Config.set("Wings." + p.getName() + ".particle", "CRIT_MAGIC");
-			if (clicked.getItemMeta().getDisplayName().equals("§cCrit Particle")) Config.set("Wings." + p.getName() + ".particle", "CRIT");
-			if (clicked.getItemMeta().getDisplayName().equals("§cNote Particle")) Config.set("Wings." + p.getName() + ".particle", "NOTE");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Instant Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL_INSTANT");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Mob Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL_MOB");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Witch Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL_WITCH");
-			if (clicked.getItemMeta().getDisplayName().equals("§cSpell Ambient Mob Particle")) Config.set("Wings." + p.getName() + ".particle", "SPELL_MOB_AMBIENT");
-			if (clicked.getItemMeta().getDisplayName().equals("§cDepth Particle")) Config.set("Wings." + p.getName() + ".particle", "SUSPENDED_DEPTH");
-			if (clicked.getItemMeta().getDisplayName().equals("§cHappy Villager Particle")) Config.set("Wings." + p.getName() + ".particle", "VILLAGER_HAPPY");
-			if (clicked.getItemMeta().getDisplayName().equals("§cWater Splash Particle")) Config.set("Wings." + p.getName() + ".particle", "WATER_SPLASH");
+			if (clicked.getItemMeta().getDisplayName().equals("Heart Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "HEART");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Flame Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "FLAME");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Enchantment Table Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "ENCHANTMENT_TABLE");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Spell Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "SPELL");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Magic Crit Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "CRIT_MAGIC");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Crit Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "CRIT");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Note Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "NOTE");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Spell Instant Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "SPELL_INSTANT");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Water Wake Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "WATER_WAKE");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Spell Mob Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "SPELL_MOB");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Spell Witch Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "SPELL_WITCH");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Spell Ambient Mob Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "SPELL_MOB_AMBIENT");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Depth Particle")){
+				Config.set("Wings." + p.getName() + ".Particle", "SUSPENDED_DEPTH");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Happy Villager Particle")){
+				this.Config.set("Wings." + p.getName() + ".Particle", "VILLAGER_HAPPY");
+			}
 			Config.saveConfig();
 			Config.reloadConfig();
 			p.closeInventory();
@@ -167,6 +192,7 @@ public class Main extends JavaPlugin implements Listener{
 						(p.hasPermission("wings.reload")) || (p.hasPermission("wings.*")))) {
 					configSetup();
 					configWingSetup(p);
+					Config.reloadConfig();
 					p.sendMessage("§aConfig Reloaded");
 					return true;
 				}
@@ -248,7 +274,7 @@ public class Main extends JavaPlugin implements Listener{
 			rotateAroundAxisX(v, (loc.getPitch() + 90.0F) * 0.01745329F);
 			rotateAroundAxisY(v, -loc.getYaw() * 0.01745329F);
 			loc = loc.add(v);
-			ParticleEffect.FLAME.display(0.0F, 0.0F, 0.0F, 0, 1, loc, 257.0D);
+			part.display(0.0F, 0.0F, 0.0F, 0, 1, loc, 50.0D);
 			loc = loc.subtract(v);
 		}
 	}
