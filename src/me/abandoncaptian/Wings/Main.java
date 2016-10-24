@@ -6,6 +6,8 @@ import me.abandoncaptian.Wings.InvUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,7 +28,6 @@ public class Main extends JavaPlugin implements Listener{
 	MyConfig Config;
 	Player player;
 	InvUtil iV;
-	ParticleEffect effect;
 
 	@Override
 	public void onEnable()
@@ -103,7 +104,7 @@ public class Main extends JavaPlugin implements Listener{
 		}
 		Inventory inv = Bukkit.createInventory(null, size, "        §b§lSet Wings Particle");
 		for (int i = 0; i < items.size(); i++) {
-			inv.addItem(new ItemStack[] { (ItemStack)items.get(i) });
+			inv.addItem(items.get(i));
 		}
 		p.openInventory(inv);
 	}
@@ -174,6 +175,10 @@ public class Main extends JavaPlugin implements Listener{
 				Config.set("Wings." + p.getName() + ".Particle", "SUSPENDED_DEPTH");
 			} else if (clicked.getItemMeta().getDisplayName().equals("Happy Villager Particle")){
 				this.Config.set("Wings." + p.getName() + ".Particle", "VILLAGER_HAPPY");
+			} else if (clicked.getItemMeta().getDisplayName().equals("End Rod Particle")){
+				this.Config.set("Wings." + p.getName() + ".Particle", "END_ROD");
+			} else if (clicked.getItemMeta().getDisplayName().equals("Black Heart Particle")){
+				this.Config.set("Wings." + p.getName() + ".Particle", "DAMAGE_INDICATOR");
 			}
 			Config.saveConfig();
 			Config.reloadConfig();
@@ -214,8 +219,8 @@ public class Main extends JavaPlugin implements Listener{
 			public void run() {
 				for (Player p : Bukkit.getOnlinePlayers()){
 					if (Config.getBoolean("Wings." + p.getName() + ".Enabled")){
-						if (ParticleEffect.valueOf(Config.getString("Wings." + p.getName() + ".Particle")) != null) {
-							ParticleEffect part = ParticleEffect.valueOf(Config.getString("Wings." + p.getName() + ".Particle"));
+						if (Particle.valueOf(Config.getString("Wings." + p.getName() + ".Particle")) != null) {
+							Particle part = Particle.valueOf(Config.getString("Wings." + p.getName() + ".Particle"));
 							wingParticles(p, part);
 						}
 					}
@@ -223,7 +228,7 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		};
 	}
-	public void wingParticles(Player p, ParticleEffect part)
+	public void wingParticles(Player p, Particle part)
 	{
 		Location loc = p.getEyeLocation().subtract(0.0D, 0.3D, 0.0D);
 		loc.setPitch(0.0F);
@@ -232,7 +237,8 @@ public class Main extends JavaPlugin implements Listener{
 		v1.setY(0);
 		loc.add(v1);
 		float steps;
-		if ((part == ParticleEffect.HEART) || (part == ParticleEffect.BARRIER))
+		
+		if ((part == Particle.HEART) || (part == Particle.BARRIER))
 			steps = 0.2F;
 		else {
 			steps = 0.1F;
@@ -267,6 +273,7 @@ public class Main extends JavaPlugin implements Listener{
 		 */
 		//Option 2
 		for (double i = -10.0D; i < 6.2D; i += steps) {
+			World world = loc.getWorld();
 			double var = Math.sin(i / 12.0D);
 			double x = Math.sin(i) * (Math.exp(Math.cos(i)) - 2.0D * Math.cos(4.0D * i) - Math.pow(var, 5.0D)) / 2.0D;
 			double z = Math.cos(i) * (Math.exp(Math.cos(i)) - 2.0D * Math.cos(4.0D * i) - Math.pow(var, 5.0D)) / 2.0D;
@@ -274,7 +281,7 @@ public class Main extends JavaPlugin implements Listener{
 			rotateAroundAxisX(v, (loc.getPitch() + 90.0F) * 0.01745329F);
 			rotateAroundAxisY(v, -loc.getYaw() * 0.01745329F);
 			loc = loc.add(v);
-			part.display(0.0F, 0.0F, 0.0F, 0, 1, loc, 50.0D);
+			world.spawnParticle(part, loc, 1, 0.0D, 0.0D, 0.0D, 0);
 			loc = loc.subtract(v);
 		}
 	}

@@ -113,6 +113,20 @@ public class InvUtil {
 			item.setItemMeta(iM);
 			particles.add(item);
 		}
+		if(p.hasPermission("wings.end_rod")){
+			ItemStack item = new ItemStack(Material.BOOK, 1);
+			ItemMeta iM = item.getItemMeta();
+			iM.setDisplayName("End Rod Particle");
+			item.setItemMeta(iM);
+			particles.add(item);
+		}
+		if(p.hasPermission("wings.damage_indicator")){
+			ItemStack item = new ItemStack(Material.BOOK, 1);
+			ItemMeta iM = item.getItemMeta();
+			iM.setDisplayName("Black Heart Particle");
+			item.setItemMeta(iM);
+			particles.add(item);
+		}
 		if(particles.size()==0){
 			ItemStack item = new ItemStack(Material.BARRIER, 1);
 			ItemMeta iM = item.getItemMeta();
