@@ -26,6 +26,7 @@ public class Main extends JavaPlugin implements Listener{
 	Logger myPluginLogger = Bukkit.getLogger();
 	MyConfigManager manager;
 	MyConfig Config;
+	MyConfig Config2;
 	Player player;
 	InvUtil iV;
 
@@ -37,10 +38,13 @@ public class Main extends JavaPlugin implements Listener{
 		myPluginLogger.info("--------------------------------");
 		getServer().getPluginManager().registerEvents(this, this);
 		manager = new MyConfigManager(this);
-		Config = manager.getNewConfig("PlayerData.yml", new String[] {"Perk Effects Player Data","Don't edit anything in this file!"});
-		configSetup();
+		Config = manager.getNewConfig("PlayerData.yml", new String[] {"Particle Wings Player Data","Don't edit anything in this file!"});
+		Config2 = manager.getNewConfig("Config.yml", new String[] {"Particle Wings Config File"});
 		iV = new InvUtil(this);
-	    Bukkit.getScheduler().runTaskTimer(this, scheduling(), 0L, 3L);
+		configSetup();
+		long timer = (long) Config2.getInt("Respawn-Timer");
+		long delay = (long) Config2.getInt("Startup-Delay");
+	    Bukkit.getScheduler().runTaskTimer(this, scheduling(), delay, timer);
 	}
 
 	@Override
@@ -55,8 +59,16 @@ public class Main extends JavaPlugin implements Listener{
 		if (!Config.contains("Wings")) {
 			Config.set("Wings", null);
 		}
+		if (!Config2.contains("Respawn-Timer")) {
+			Config2.set("Respawn-Timer", 10);
+		}
+		if (!Config2.contains("Startup-Delay")) {
+			Config2.set("Startup-Delay", 1200);
+		}
 		Config.saveConfig();
 		Config.reloadConfig();
+		Config2.saveConfig();
+		Config2.reloadConfig();
 	}
 
 	public void configWingSetup(Player p) {
@@ -78,10 +90,10 @@ public class Main extends JavaPlugin implements Listener{
 		ItemMeta toggleM = particle.getItemMeta();
 		ItemStack toggle;
 		if (Config.getBoolean("Wings." + p.getName() + ".Enabled")) {
-			toggle = new ItemStack(Material.REDSTONE_TORCH_ON, 1);
+			toggle = new ItemStack(Material.SLIME_BALL, 1);
 			toggleM.setDisplayName("§aToggled On");
 		} else {
-			toggle = new ItemStack(Material.TORCH, 1);
+			toggle = new ItemStack(Material.MAGMA_CREAM, 1);
 			toggleM.setDisplayName("§cToggled Off");
 		}
 		partM.setDisplayName("§aSet Wing Particle");
@@ -198,6 +210,7 @@ public class Main extends JavaPlugin implements Listener{
 					configSetup();
 					configWingSetup(p);
 					Config.reloadConfig();
+					Config2.reloadConfig();
 					p.sendMessage("§aConfig Reloaded");
 					return true;
 				}
@@ -244,7 +257,6 @@ public class Main extends JavaPlugin implements Listener{
 			steps = 0.1F;
 		}
 		/**
-		//Option 1
 		for (double i = -20.199999999999999D; i < 5.0D; i += 0.1) {
 	        double x = 1.75D * (1.0D - Math.sin(i)) * Math.cos(i * 0.25D) / 2.0D;
 	        double z = 2.0D * (Math.sin(i) - 1.0D) / 2.0D;
@@ -253,12 +265,11 @@ public class Main extends JavaPlugin implements Listener{
 	        rotateAroundAxisX(v, 2.007128715515137D);
 	        rotateAroundAxisY(v, -loc.getYaw() * 0.01745329F);
 			loc = loc.add(v);
-			ParticleEffect.FLAME.display(0.0F, 0.0F, 0.0F, 0, 3, loc, 257.0D);
+			world.spawnParticle(part, loc, 1, 0.0D, 0.0D, 0.0D, 0);
 			loc = loc.subtract(v);
 		}
 		 */
 		/**
-		//Option 1
 		for (double i = -20.199999999999999D; i < 5.0D; i += 0.1) {
 	        double x = 1.75D * (1.0D - Math.sin(i)) * Math.cos(i * 0.5D) / 2.0D;
 	        double z = 2.0D * (Math.sin(i) - 1.0D) / 2.0D;
@@ -267,11 +278,10 @@ public class Main extends JavaPlugin implements Listener{
 	        rotateAroundAxisX(v, 2.007128715515137D);
 	        rotateAroundAxisY(v, -loc.getYaw() * 0.01745329F);
 			loc = loc.add(v);
-			ParticleEffect.FLAME.display(0.0F, 0.0F, 0.0F, 0, 3, loc, 257.0D);
+			world.spawnParticle(part, loc, 1, 0.0D, 0.0D, 0.0D, 0);
 			loc = loc.subtract(v);
 	    }
 		 */
-		//Option 2
 		for (double i = -10.0D; i < 6.2D; i += steps) {
 			World world = loc.getWorld();
 			double var = Math.sin(i / 12.0D);
